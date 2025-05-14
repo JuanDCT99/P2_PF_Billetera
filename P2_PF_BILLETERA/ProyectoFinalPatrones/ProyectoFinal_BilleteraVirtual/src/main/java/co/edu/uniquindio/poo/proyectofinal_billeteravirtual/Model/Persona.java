@@ -1,6 +1,12 @@
 package co.edu.uniquindio.poo.proyectofinal_billeteravirtual.Model;
 
-public class Persona {
+import java.io.Serializable;
+
+/**
+ * Clase que representa una persona en el sistema
+ */
+public class Persona implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private String nombre;
     private String idGeneral;
@@ -8,6 +14,20 @@ public class Persona {
     private String telefono;
     private String direccion;
 
+    /**
+     * Constructor sin parámetros
+     */
+    public Persona() {
+        this.nombre = "";
+        this.idGeneral = "";
+        this.email = "";
+        this.telefono = "";
+        this.direccion = "";
+    }
+
+    /**
+     * Constructor con todos los parámetros
+     */
     public Persona(String nombre, String idGeneral, String email, String telefono, String direccion) {
         this.nombre = nombre;
         this.idGeneral = idGeneral;

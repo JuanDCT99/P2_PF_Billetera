@@ -1,10 +1,22 @@
 package co.edu.uniquindio.poo.proyectofinal_billeteravirtual.Model;
 
-public class Categoria {
+import java.io.Serializable;
+
+public class Categoria implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private String idCategoria;
     private String nombre;
     private String descripcion;
+
+    /**
+     * Constructor sin parámetros para serialización
+     */
+    public Categoria() {
+        this.idCategoria = "";
+        this.nombre = "";
+        this.descripcion = "";
+    }
 
     public Categoria(String idCategoria, String nombre, String descripcion) {
         this.idCategoria = idCategoria;

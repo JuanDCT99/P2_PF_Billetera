@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 
 public abstract class TransaccionFactory implements Transaccion {
+    private static final long serialVersionUID = 1L;
 
     private String idTransaccion;
     private LocalDate fechaTransaccion;
