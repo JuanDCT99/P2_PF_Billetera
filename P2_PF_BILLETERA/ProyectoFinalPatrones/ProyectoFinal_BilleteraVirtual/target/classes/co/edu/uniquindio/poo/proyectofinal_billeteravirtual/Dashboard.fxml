@@ -26,7 +26,7 @@
                         <Font name="System Bold" size="16.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblSaldo" alignment="CENTER" prefWidth="250.0" text="Saldo: $0.00" textFill="WHITE">
+                  <Label fx:id="lblSaldo" alignment="CENTER" prefWidth="250.0" text="Saldo: $$0.00" textFill="WHITE">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -49,6 +49,11 @@
                   <Font size="14.0" />
                </font>
             </Button>
+            <Button fx:id="btnEstadisticas" mnemonicParsing="false" onAction="#irAEstadisticas" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #2E7D32; -fx-text-fill: white;" text="Estadísticas">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
             <Button fx:id="btnCuentas" mnemonicParsing="false" onAction="#irACuentas" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #2E7D32; -fx-text-fill: white;" text="Cuentas">
                <font>
                   <Font size="14.0" />
@@ -66,14 +71,17 @@
                </font>
             </Button>
          </children>
+         <padding>
+            <Insets bottom="20.0" left="0.0" right="0.0" top="0.0" />
+         </padding>
       </VBox>
    </left>
    <center>
       <VBox prefHeight="764.0" prefWidth="876.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="876.0" style="-fx-background-color: #4CAF50;">
+            <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="876.0" style="-fx-background-color: #E8F5E9;">
                <children>
-                  <Label text="Dashboard" textFill="WHITE">
+                  <Label text="Dashboard" textFill="#2e7d32">
                      <font>
                         <Font name="System Bold" size="24.0" />
                      </font>
@@ -96,7 +104,7 @@
                                           <Font name="System Bold" size="18.0" />
                                        </font>
                                     </Label>
-                                    <Label fx:id="lblSaldoTotal" text="\$0.00">
+                                    <Label fx:id="lblSaldoTotal" text="$$0.00">
                                        <font>
                                           <Font size="24.0" />
                                        </font>
@@ -133,7 +141,7 @@
                               </VBox>
                            </children>
                            <padding>
-                              <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+                              <Insets bottom="0.0" left="20.0" right="20.0" top="20.0" />
                            </padding>
                         </HBox>
                         <VBox prefWidth="874.0" spacing="10.0">
@@ -169,7 +177,7 @@
                                     <TableColumn fx:id="colMontoTotal" prefWidth="150.0" text="Monto Total" />
                                     <TableColumn fx:id="colMontoGastado" prefWidth="150.0" text="Monto Gastado" />
                                     <TableColumn fx:id="colCategoria" prefWidth="150.0" text="Categoría" />
-                                    <TableColumn fx:id="colPorcentaje" prefWidth="183.0" text="\% Utilizado" />
+                                    <TableColumn fx:id="colPorcentaje" prefWidth="183.0" text="Porcentaje Utilizado" />
                                  </columns>
                               </TableView>
                            </children>

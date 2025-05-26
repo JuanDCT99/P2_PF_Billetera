@@ -14,6 +14,7 @@ public abstract class TransaccionFactory implements Transaccion {
     private LinkedList<Cuenta> cuentasAsociadas;
     private String empresaDestido;
     private Categoria categoria;
+    private Usuario usuario;
 
     public TransaccionFactory(String idTransaccion, LocalDate fechaTransaccion, TipoTransaccion tipoTransaccion, double monto, String descripcion, String empresaDestido, Categoria categoria) {
         this.idTransaccion = idTransaccion;
@@ -23,7 +24,12 @@ public abstract class TransaccionFactory implements Transaccion {
         this.descripcion = descripcion;
         this.empresaDestido = empresaDestido;
         this.categoria = categoria;
+        this.usuario = null; // Se establecerá después
+    }
 
+    public TransaccionFactory(String idTransaccion, LocalDate fechaTransaccion, TipoTransaccion tipoTransaccion, double monto, String descripcion, String empresaDestido, Categoria categoria, Usuario usuario) {
+        this(idTransaccion, fechaTransaccion, tipoTransaccion, monto, descripcion, empresaDestido, categoria);
+        this.usuario = usuario;
     }
 
     public String getIdTransaccion() {
@@ -88,6 +94,14 @@ public abstract class TransaccionFactory implements Transaccion {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public abstract void CrearTransaccion();

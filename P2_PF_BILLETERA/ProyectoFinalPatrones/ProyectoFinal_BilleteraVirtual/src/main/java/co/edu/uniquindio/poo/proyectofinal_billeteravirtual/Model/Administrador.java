@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-/**
- * Clase que representa a un administrador de la billetera virtual
- */
+
 public class Administrador extends Persona {
 
     private LinkedList<Cuenta> cuentas;
@@ -15,7 +13,7 @@ public class Administrador extends Persona {
     private DataManager dataManager;
 
     /**
-     * Constructor sin parámetros para serialización
+     * LA INTENCIÓN ES PODER APLICAR PERSISTENCIA PARA EL GUARDADO DE DATOS
      */
     public Administrador() {
         super();
@@ -29,7 +27,7 @@ public class Administrador extends Persona {
     public Administrador(String nombre, String idGeneral, String email, String telefono, String direccion) {
         super(nombre, idGeneral, email, telefono, direccion);
         this.cuentas = new LinkedList<>();
-        // No inicializar dataManager aquí para evitar recursión
+
     }
 
     /**

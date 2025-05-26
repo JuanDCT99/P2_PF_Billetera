@@ -26,95 +26,95 @@ import java.util.LinkedList;
  * Controlador para la vista de transacciones
  */
 public class TransaccionesController {
-    
+
     @FXML
     private Label lblNombreUsuario;
-    
+
     @FXML
     private Label lblSaldo;
-    
+
     @FXML
     private Button btnDashboard;
-    
+
     @FXML
     private Button btnTransacciones;
-    
+
     @FXML
     private Button btnPresupuestos;
-    
+
     @FXML
     private Button btnCuentas;
-    
+
     @FXML
     private Button btnCategorias;
-    
+
     @FXML
     private Button btnCerrarSesion;
-    
+
     @FXML
     private ComboBox<TipoTransaccion> cmbTipoTransaccion;
-    
+
     @FXML
     private Button btnFiltrar;
-    
+
     @FXML
     private Button btnLimpiarFiltro;
-    
+
     @FXML
     private TableView<TransaccionFactory> tblTransacciones;
-    
+
     @FXML
     private TableColumn<TransaccionFactory, String> colFecha;
-    
+
     @FXML
     private TableColumn<TransaccionFactory, String> colTipo;
-    
+
     @FXML
     private TableColumn<TransaccionFactory, Double> colMonto;
-    
+
     @FXML
     private TableColumn<TransaccionFactory, String> colDescripcion;
-    
+
     @FXML
     private TableColumn<TransaccionFactory, String> colCategoria;
-    
+
     @FXML
     private Button btnDeposito;
-    
+
     @FXML
     private Button btnRetiro;
-    
+
     @FXML
     private Button btnTransferencia;
-    
+
     @FXML
     private Label lblTipoTransaccion;
-    
+
     @FXML
     private TextField txtMonto;
-    
+
     @FXML
     private ComboBox<Cuenta> cmbCuentaOrigen;
-    
+
     @FXML
     private Label lblCuentaDestino;
-    
+
     @FXML
     private ComboBox<Cuenta> cmbCuentaDestino;
-    
+
     @FXML
     private TextField txtDescripcion;
-    
+
     @FXML
     private Button btnRealizarTransaccion;
-    
+
     private SceneController sceneController;
     private AuthenticationService authService;
     private BilleteraService billeteraService;
     private Usuario usuarioActual;
     private TipoTransaccion tipoTransaccionSeleccionado;
     private ObservableList<TransaccionFactory> transaccionesOriginales;
-    
+
     /**
      * Inicializa el controlador
      */
@@ -122,11 +122,11 @@ public class TransaccionesController {
     public void initialize() {
         sceneController = SceneController.getInstance();
         authService = AuthenticationService.getInstance();
-        billeteraService = new BilleteraService();
-        
+        billeteraService = BilleteraService.getInstance();
+
         // Obtener el usuario actual
         usuarioActual = sceneController.getUsuarioActual();
-        
+
         if (usuarioActual == null) {
             // Si no hay usuario autenticado, redirigir a la vista de inicio de sesión
             try {
@@ -137,85 +137,126 @@ public class TransaccionesController {
                 e.printStackTrace();
             }
         }
-        
+
         // Configurar la información del usuario
         lblNombreUsuario.setText(usuarioActual.getNombre());
         lblSaldo.setText("Saldo: $" + String.format("%.2f", usuarioActual.getSaldoTotal()));
-        
+
         // Configurar el combo box de tipos de transacción
         cmbTipoTransaccion.setItems(FXCollections.observableArrayList(TipoTransaccion.values()));
-        
+
         // Configurar la tabla de transacciones
         configurarTablaTransacciones();
-        
+
         // Cargar las transacciones
         cargarTransacciones();
-        
+
         // Configurar los combo box de cuentas
         cargarCuentas();
-        
+
         // Ocultar campos de cuenta destino inicialmente
         lblCuentaDestino.setVisible(false);
         cmbCuentaDestino.setVisible(false);
-        
+
         // Deshabilitar el botón de realizar transacción hasta que se seleccione un tipo
         btnRealizarTransaccion.setDisable(true);
     }
-    
+
     /**
      * Configura la tabla de transacciones
      */
     private void configurarTablaTransacciones() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        
-        colFecha.setCellValueFactory(cellData -> 
+
+        colFecha.setCellValueFactory(cellData ->
             new SimpleStringProperty(cellData.getValue().getFechaTransaccion().format(formatter)));
-        
-        colTipo.setCellValueFactory(cellData -> 
+
+        colTipo.setCellValueFactory(cellData ->
             new SimpleStringProperty(cellData.getValue().getTipoTransaccion().toString()));
-        
+
         colMonto.setCellValueFactory(new PropertyValueFactory<>("monto"));
-        
+
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-        
-        colCategoria.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getCategoria().getNombre()));
+
+        colCategoria.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getCategoria() != null) {
+                return new SimpleStringProperty(cellData.getValue().getCategoria().getNombre());
+            } else {
+                return new SimpleStringProperty("Sin categoría");
+            }
+        });
     }
-    
+
     /**
      * Carga las transacciones del usuario
      */
     private void cargarTransacciones() {
-        LinkedList<TransaccionFactory> transacciones = billeteraService.obtenerTransaccionesUsuario();
-        transaccionesOriginales = FXCollections.observableArrayList(transacciones);
-        tblTransacciones.setItems(transaccionesOriginales);
+        try {
+            LinkedList<TransaccionFactory> transacciones = billeteraService.obtenerTransaccionesUsuario();
+            transaccionesOriginales = FXCollections.observableArrayList(transacciones);
+            tblTransacciones.setItems(transaccionesOriginales);
+        } catch (Exception e) {
+            System.err.println("Error al cargar transacciones: " + e.getMessage());
+            e.printStackTrace();
+            sceneController.mostrarError("Error", "No se pudieron cargar las transacciones: " + e.getMessage());
+            // Establecer una lista vacía para evitar NullPointerException
+            transaccionesOriginales = FXCollections.observableArrayList();
+            tblTransacciones.setItems(transaccionesOriginales);
+        }
     }
-    
+
     /**
      * Carga las cuentas del usuario en los combo box
      */
     private void cargarCuentas() {
-        ObservableList<Cuenta> cuentas = FXCollections.observableArrayList(usuarioActual.getCuentasAsociadas());
-        cmbCuentaOrigen.setItems(cuentas);
-        cmbCuentaDestino.setItems(cuentas);
+        try {
+            ObservableList<Cuenta> cuentas = FXCollections.observableArrayList(usuarioActual.getCuentasAsociadas());
+            cmbCuentaOrigen.setItems(cuentas);
+            cmbCuentaDestino.setItems(cuentas);
+
+            // Si no hay cuentas, mostrar un mensaje
+            if (cuentas.isEmpty()) {
+                sceneController.mostrarInformacion("Sin cuentas", "No tiene cuentas asociadas. Por favor, cree una cuenta primero.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error al cargar cuentas: " + e.getMessage());
+            e.printStackTrace();
+            sceneController.mostrarError("Error", "No se pudieron cargar las cuentas: " + e.getMessage());
+            // Establecer listas vacías para evitar NullPointerException
+            cmbCuentaOrigen.setItems(FXCollections.observableArrayList());
+            cmbCuentaDestino.setItems(FXCollections.observableArrayList());
+        }
     }
-    
+
     /**
      * Filtra las transacciones por tipo
      */
     @FXML
     private void filtrarTransacciones() {
-        TipoTransaccion tipoSeleccionado = cmbTipoTransaccion.getValue();
-        
-        if (tipoSeleccionado == null) {
-            sceneController.mostrarError("Error", "Debe seleccionar un tipo de transacción");
-            return;
+        try {
+            TipoTransaccion tipoSeleccionado = cmbTipoTransaccion.getValue();
+
+            if (tipoSeleccionado == null) {
+                sceneController.mostrarError("Error", "Debe seleccionar un tipo de transacción");
+                return;
+            }
+
+            LinkedList<TransaccionFactory> transaccionesFiltradas = billeteraService.obtenerTransaccionesPorTipo(tipoSeleccionado);
+            tblTransacciones.setItems(FXCollections.observableArrayList(transaccionesFiltradas));
+
+            // Mostrar mensaje si no hay transacciones del tipo seleccionado
+            if (transaccionesFiltradas.isEmpty()) {
+                sceneController.mostrarInformacion("Sin resultados", "No hay transacciones del tipo " + tipoSeleccionado);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al filtrar transacciones: " + e.getMessage());
+            e.printStackTrace();
+            sceneController.mostrarError("Error", "No se pudieron filtrar las transacciones: " + e.getMessage());
+            // Mantener la lista original en caso de error
+            tblTransacciones.setItems(transaccionesOriginales);
         }
-        
-        LinkedList<TransaccionFactory> transaccionesFiltradas = billeteraService.obtenerTransaccionesPorTipo(tipoSeleccionado);
-        tblTransacciones.setItems(FXCollections.observableArrayList(transaccionesFiltradas));
     }
-    
+
     /**
      * Limpia el filtro de transacciones
      */
@@ -224,7 +265,7 @@ public class TransaccionesController {
         cmbTipoTransaccion.setValue(null);
         tblTransacciones.setItems(transaccionesOriginales);
     }
-    
+
     /**
      * Selecciona el tipo de transacción Depósito
      */
@@ -236,7 +277,7 @@ public class TransaccionesController {
         cmbCuentaDestino.setVisible(false);
         btnRealizarTransaccion.setDisable(false);
     }
-    
+
     /**
      * Selecciona el tipo de transacción Retiro
      */
@@ -248,7 +289,7 @@ public class TransaccionesController {
         cmbCuentaDestino.setVisible(false);
         btnRealizarTransaccion.setDisable(false);
     }
-    
+
     /**
      * Selecciona el tipo de transacción Transferencia
      */
@@ -260,7 +301,7 @@ public class TransaccionesController {
         cmbCuentaDestino.setVisible(true);
         btnRealizarTransaccion.setDisable(false);
     }
-    
+
     /**
      * Realiza la transacción seleccionada
      */
@@ -271,22 +312,22 @@ public class TransaccionesController {
             sceneController.mostrarError("Error", "Debe seleccionar un tipo de transacción");
             return;
         }
-        
+
         if (txtMonto.getText().isEmpty()) {
             sceneController.mostrarError("Error", "Debe ingresar un monto");
             return;
         }
-        
+
         if (cmbCuentaOrigen.getValue() == null) {
             sceneController.mostrarError("Error", "Debe seleccionar una cuenta de origen");
             return;
         }
-        
+
         if (tipoTransaccionSeleccionado == TipoTransaccion.TRANSFERENCIA && cmbCuentaDestino.getValue() == null) {
             sceneController.mostrarError("Error", "Debe seleccionar una cuenta de destino");
             return;
         }
-        
+
         // Obtener datos del formulario
         double monto;
         try {
@@ -299,22 +340,22 @@ public class TransaccionesController {
             sceneController.mostrarError("Error", "El monto debe ser un número válido");
             return;
         }
-        
+
         String idCuentaOrigen = cmbCuentaOrigen.getValue().getIdCuenta();
         String idCuentaDestino = null;
-        
+
         if (tipoTransaccionSeleccionado == TipoTransaccion.TRANSFERENCIA) {
             idCuentaDestino = cmbCuentaDestino.getValue().getIdCuenta();
-            
+
             if (idCuentaOrigen.equals(idCuentaDestino)) {
                 sceneController.mostrarError("Error", "La cuenta de origen y destino no pueden ser la misma");
                 return;
             }
         }
-        
+
         // Realizar la transacción
         boolean transaccionExitosa = false;
-        
+
         switch (tipoTransaccionSeleccionado) {
             case DEPOSITO:
                 transaccionExitosa = billeteraService.realizarDeposito(monto, idCuentaOrigen);
@@ -326,7 +367,7 @@ public class TransaccionesController {
                 transaccionExitosa = billeteraService.realizarTransferencia(monto, idCuentaOrigen, idCuentaDestino);
                 break;
         }
-        
+
         if (transaccionExitosa) {
             sceneController.mostrarInformacion("Transacción exitosa", "La transacción se realizó correctamente");
             limpiarFormularioTransaccion();
@@ -336,7 +377,7 @@ public class TransaccionesController {
             sceneController.mostrarError("Error", "No se pudo realizar la transacción");
         }
     }
-    
+
     /**
      * Limpia el formulario de transacción
      */
@@ -351,7 +392,7 @@ public class TransaccionesController {
         cmbCuentaDestino.setVisible(false);
         btnRealizarTransaccion.setDisable(true);
     }
-    
+
     /**
      * Actualiza el saldo del usuario
      */
@@ -359,11 +400,11 @@ public class TransaccionesController {
         // Actualizar el usuario actual
         usuarioActual = authService.getUsuarioAutenticado();
         sceneController.setUsuarioActual(usuarioActual);
-        
+
         // Actualizar la etiqueta de saldo
         lblSaldo.setText("Saldo: $" + String.format("%.2f", usuarioActual.getSaldoTotal()));
     }
-    
+
     /**
      * Navega al dashboard
      */
@@ -376,7 +417,7 @@ public class TransaccionesController {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Muestra la vista de transacciones (actual)
      */
@@ -384,7 +425,7 @@ public class TransaccionesController {
     private void mostrarTransacciones() {
         // Ya estamos en la vista de transacciones, no es necesario hacer nada
     }
-    
+
     /**
      * Navega a la vista de presupuestos
      */
@@ -397,7 +438,7 @@ public class TransaccionesController {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Navega a la vista de cuentas
      */
@@ -410,7 +451,7 @@ public class TransaccionesController {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Navega a la vista de categorías
      */
@@ -423,7 +464,7 @@ public class TransaccionesController {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Cierra la sesión del usuario
      */
@@ -432,7 +473,7 @@ public class TransaccionesController {
         if (sceneController.mostrarConfirmacion("Cerrar Sesión", "¿Está seguro que desea cerrar sesión?")) {
             authService.cerrarSesion();
             sceneController.clearData();
-            
+
             try {
                 sceneController.cambiarEscena(SceneController.VISTA_BIENVENIDA);
             } catch (IOException e) {

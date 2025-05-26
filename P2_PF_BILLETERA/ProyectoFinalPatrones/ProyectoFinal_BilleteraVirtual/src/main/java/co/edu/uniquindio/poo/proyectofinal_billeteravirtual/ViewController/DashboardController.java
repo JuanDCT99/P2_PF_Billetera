@@ -104,7 +104,7 @@ public class DashboardController {
             System.out.println("Inicializando DashboardController");
             sceneController = SceneController.getInstance();
             authService = AuthenticationService.getInstance();
-            billeteraService = new BilleteraService();
+            billeteraService = BilleteraService.getInstance();
 
             // Obtener el usuario actual
             usuarioActual = sceneController.getUsuarioActual();
@@ -121,9 +121,18 @@ public class DashboardController {
                 } else {
                     // Si todavía no hay usuario, redirigir a la vista de inicio de sesión
                     System.out.println("No hay usuario autenticado, redirigiendo a la vista de inicio de sesión");
+                    sceneController.mostrarError("Sesión no iniciada", "Debe iniciar sesión para acceder al dashboard");
                     sceneController.cambiarEscena(SceneController.VISTA_SESION);
                     return;
                 }
+            }
+
+            // Verificar que el usuario tenga los datos necesarios
+            if (usuarioActual.getNombre() == null || usuarioActual.getNombre().isEmpty()) {
+                System.err.println("El usuario no tiene nombre válido");
+                sceneController.mostrarError("Error", "El usuario no tiene un nombre válido");
+                sceneController.cambiarEscena(SceneController.VISTA_SESION);
+                return;
             }
 
             // Configurar la información del usuario
@@ -187,16 +196,32 @@ public class DashboardController {
      * Carga las transacciones del usuario
      */
     private void cargarTransacciones() {
-        LinkedList<TransaccionFactory> transacciones = billeteraService.obtenerTransaccionesUsuario();
-        tblTransacciones.setItems(FXCollections.observableArrayList(transacciones));
+        try {
+            LinkedList<TransaccionFactory> transacciones = billeteraService.obtenerTransaccionesUsuario();
+            tblTransacciones.setItems(FXCollections.observableArrayList(transacciones));
+        } catch (Exception e) {
+            System.err.println("Error al cargar transacciones: " + e.getMessage());
+            e.printStackTrace();
+            sceneController.mostrarError("Error", "No se pudieron cargar las transacciones: " + e.getMessage());
+            // Establecer una lista vacía para evitar NullPointerException
+            tblTransacciones.setItems(FXCollections.observableArrayList());
+        }
     }
 
     /**
      * Carga los presupuestos del usuario
      */
     private void cargarPresupuestos() {
-        LinkedList<Presupuesto> presupuestos = billeteraService.obtenerPresupuestosUsuario();
-        tblPresupuestos.setItems(FXCollections.observableArrayList(presupuestos));
+        try {
+            LinkedList<Presupuesto> presupuestos = billeteraService.obtenerPresupuestosUsuario();
+            tblPresupuestos.setItems(FXCollections.observableArrayList(presupuestos));
+        } catch (Exception e) {
+            System.err.println("Error al cargar presupuestos: " + e.getMessage());
+            e.printStackTrace();
+            sceneController.mostrarError("Error", "No se pudieron cargar los presupuestos: " + e.getMessage());
+            // Establecer una lista vacía para evitar NullPointerException
+            tblPresupuestos.setItems(FXCollections.observableArrayList());
+        }
     }
 
     /**
@@ -255,6 +280,19 @@ public class DashboardController {
             sceneController.cambiarEscena(SceneController.VISTA_CATEGORIAS);
         } catch (IOException e) {
             sceneController.mostrarError("Error", "No se pudo cargar la vista de categorías: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Navega a la vista de estadísticas
+     */
+    @FXML
+    private void irAEstadisticas() {
+        try {
+            sceneController.cambiarEscena(SceneController.VISTA_ESTADISTICAS);
+        } catch (IOException e) {
+            sceneController.mostrarError("Error", "No se pudo cargar la vista de estadísticas: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -1,8 +1,6 @@
 package co.edu.uniquindio.poo.proyectofinal_billeteravirtual.Model;
 
-/**
- * Implementación concreta de la estrategia para realizar retiros
- */
+
 public class RetiroStrategy implements OperacionStrategy {
 
     private DataManager dataManager;

@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,10 +38,10 @@ public class DataManager {
         this.presupuestos = new LinkedList<>();
         this.categorias = new LinkedList<>();
 
-        // Crear directorio de datos si no existe
+
         crearDirectorioSiNoExiste();
 
-        // Cargar datos desde archivo o inicializar datos de prueba si no existe
+
         if (!cargarDatos()) {
             inicializarDatosPrueba();
             guardarDatos();
@@ -328,5 +329,13 @@ public class DataManager {
 
     public LinkedList<Categoria> getCategorias() {
         return categorias;
+    }
+
+    public void setCategorias(List<Categoria> categoriasTradicionales) {
+        if (categoriasTradicionales != null) {
+            this.categorias.clear();
+            this.categorias.addAll(categoriasTradicionales);
+            guardarDatos();
+        }
     }
 }

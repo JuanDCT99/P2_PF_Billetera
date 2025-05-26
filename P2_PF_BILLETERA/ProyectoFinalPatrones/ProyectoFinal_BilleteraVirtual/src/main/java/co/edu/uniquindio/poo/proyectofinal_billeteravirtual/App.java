@@ -1,7 +1,9 @@
 package co.edu.uniquindio.poo.proyectofinal_billeteravirtual;
 
 import co.edu.uniquindio.poo.proyectofinal_billeteravirtual.Model.DataManager;
+import co.edu.uniquindio.poo.proyectofinal_billeteravirtual.util.PerformanceOptimizer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -42,5 +44,29 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    /**
+     * Método que se ejecuta al cerrar la aplicación
+     * Guarda los datos y libera recursos
+     */
+    @Override
+    public void stop() {
+        try {
+            // Guardar datos antes de cerrar
+            DataManager.getInstance().guardarDatos();
+
+            // Limpiar caché y cerrar servicios de ejecución
+            PerformanceOptimizer.limpiarCache();
+            PerformanceOptimizer.cerrarExecutorService();
+
+            System.out.println("Aplicación cerrada correctamente");
+        } catch (Exception e) {
+            System.err.println("Error al cerrar la aplicación: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // Asegurar que la aplicación se cierre completamente
+            Platform.exit();
+        }
     }
 }

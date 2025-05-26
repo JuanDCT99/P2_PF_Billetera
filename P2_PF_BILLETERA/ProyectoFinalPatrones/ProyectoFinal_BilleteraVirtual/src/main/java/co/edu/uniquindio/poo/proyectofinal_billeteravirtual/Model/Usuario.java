@@ -36,11 +36,13 @@ public class Usuario extends Persona {
     public Usuario(String nombre, String idGeneral, String email, String telefono, String direccion, double saldoTotal, LinkedList<Cuenta> cuentasAsociadas) {
         super(nombre, idGeneral, email, telefono, direccion);
         this.saldoTotal = saldoTotal;
-        this.cuentasAsociadas = new LinkedList<>();
         this.presupuestos = new LinkedList<>();
 
+        // Inicializar la lista de cuentas
         if (cuentasAsociadas != null) {
-            this.cuentasAsociadas.addAll(cuentasAsociadas);
+            this.cuentasAsociadas = new LinkedList<>(cuentasAsociadas);
+        } else {
+            this.cuentasAsociadas = new LinkedList<>();
         }
     }
 
@@ -110,6 +112,18 @@ public class Usuario extends Persona {
     }
 
     /**
+     * Elimina una cuenta del usuario
+     * @param cuenta Cuenta a eliminar
+     * @return true si se eliminó correctamente, false si no existe
+     */
+    public boolean eliminarCuenta(Cuenta cuenta) {
+        if (cuenta == null) {
+            return false;
+        }
+        return cuentasAsociadas.remove(cuenta);
+    }
+
+    /**
      * Busca una cuenta por su ID
      * @param idCuenta ID de la cuenta
      * @return La cuenta encontrada o null si no existe
@@ -151,6 +165,18 @@ public class Usuario extends Persona {
     public Presupuesto buscarPresupuestoPorId(String idPresupuesto) {
         return presupuestos.stream()
                 .filter(p -> p.getIdPresupuesto().equals(idPresupuesto))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Busca una cuenta por su número de cuenta
+     * @param numeroCuenta Número de la cuenta
+     * @return La cuenta encontrada o null si no existe
+     */
+    public Cuenta buscarCuenta(String numeroCuenta) {
+        return cuentasAsociadas.stream()
+                .filter(c -> c.getNumeroCuenta().equals(numeroCuenta))
                 .findFirst()
                 .orElse(null);
     }

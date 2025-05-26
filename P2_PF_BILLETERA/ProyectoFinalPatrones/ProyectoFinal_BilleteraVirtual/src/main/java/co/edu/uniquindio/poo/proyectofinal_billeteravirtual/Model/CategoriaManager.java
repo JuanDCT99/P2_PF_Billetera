@@ -4,15 +4,31 @@ import java.util.LinkedList;
 
 /**
  * Clase que gestiona las categorías de la aplicación
+ * Implementa el patrón Singleton
  */
 public class CategoriaManager {
-    
+
+    private static CategoriaManager instance;
     private DataManager dataManager;
-    
-    public CategoriaManager() {
+
+    /**
+     * Constructor privado para implementar Singleton
+     */
+    private CategoriaManager() {
         this.dataManager = DataManager.getInstance();
     }
-    
+
+    /**
+     * Obtiene la instancia única del gestor de categorías
+     * @return Instancia del gestor de categorías
+     */
+    public static CategoriaManager getInstance() {
+        if (instance == null) {
+            instance = new CategoriaManager();
+        }
+        return instance;
+    }
+
     /**
      * Crea una nueva categoría
      * @param nombre Nombre de la categoría
@@ -25,7 +41,7 @@ public class CategoriaManager {
         dataManager.agregarCategoria(categoria);
         return categoria;
     }
-    
+
     /**
      * Actualiza una categoría existente
      * @param idCategoria ID de la categoría a actualizar
@@ -38,12 +54,12 @@ public class CategoriaManager {
         if (categoria == null) {
             return false;
         }
-        
+
         categoria.setNombre(nombre);
         categoria.setDescripcion(descripcion);
         return true;
     }
-    
+
     /**
      * Elimina una categoría
      * @param idCategoria ID de la categoría a eliminar
@@ -54,11 +70,11 @@ public class CategoriaManager {
         if (categoria == null) {
             return false;
         }
-        
+
         dataManager.eliminarCategoria(idCategoria);
         return true;
     }
-    
+
     /**
      * Obtiene todas las categorías
      * @return Lista de categorías
@@ -66,7 +82,7 @@ public class CategoriaManager {
     public LinkedList<Categoria> obtenerCategorias() {
         return dataManager.getCategorias();
     }
-    
+
     /**
      * Busca una categoría por su ID
      * @param idCategoria ID de la categoría
@@ -75,7 +91,7 @@ public class CategoriaManager {
     public Categoria buscarCategoria(String idCategoria) {
         return dataManager.buscarCategoria(idCategoria);
     }
-    
+
     /**
      * Busca una categoría por su nombre
      * @param nombre Nombre de la categoría

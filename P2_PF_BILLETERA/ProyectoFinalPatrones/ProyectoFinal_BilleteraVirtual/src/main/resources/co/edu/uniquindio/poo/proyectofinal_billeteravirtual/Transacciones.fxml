@@ -26,7 +26,7 @@
                         <Font name="System Bold" size="16.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblSaldo" alignment="CENTER" prefWidth="250.0" text="Saldo: $0.00" textFill="WHITE">
+                  <Label fx:id="lblSaldo" alignment="CENTER" prefWidth="250.0" text="Saldo: $$0.00" textFill="WHITE">
                      <font>
                         <Font size="14.0" />
                      </font>

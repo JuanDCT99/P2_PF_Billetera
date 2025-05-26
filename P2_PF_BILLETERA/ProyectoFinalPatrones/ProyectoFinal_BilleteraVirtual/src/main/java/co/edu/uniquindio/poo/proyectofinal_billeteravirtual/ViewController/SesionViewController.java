@@ -60,6 +60,11 @@ public class SesionViewController {
                 return;
             }
 
+            // Validar formato del ID
+            if (!validarFormatoId()) {
+                return;
+            }
+
             // Obtener datos del formulario
             String id = txtId.getText();
             String password = txtPassword.getText();
@@ -116,6 +121,28 @@ public class SesionViewController {
      */
     private boolean camposVacios() {
         return txtId.getText().isEmpty() || txtPassword.getText().isEmpty();
+    }
+
+    /**
+     * Valida el formato del ID
+     * @return true si el formato es válido, false en caso contrario
+     */
+    private boolean validarFormatoId() {
+        String id = txtId.getText().trim();
+
+        // Verificar longitud mínima
+        if (id.length() < 5) {
+            sceneController.mostrarError("Error", "El ID debe tener al menos 5 caracteres");
+            return false;
+        }
+
+        // Verificar que solo contenga letras y números
+        if (!id.matches("^[a-zA-Z0-9]+$")) {
+            sceneController.mostrarError("Error", "El ID solo puede contener letras y números");
+            return false;
+        }
+
+        return true;
     }
 
     /**

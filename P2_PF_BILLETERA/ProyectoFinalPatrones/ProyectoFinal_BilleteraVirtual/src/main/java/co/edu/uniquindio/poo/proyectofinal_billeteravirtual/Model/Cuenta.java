@@ -48,6 +48,31 @@ public class Cuenta implements ICuenta {
         this.saldo = saldo;
     }
 
+    /**
+     * Constructor simplificado para la interfaz de usuario
+     * @param nombre Nombre de la cuenta (se usa como nombre del banco)
+     * @param tipo Tipo de cuenta como String
+     * @param saldoInicial Saldo inicial de la cuenta
+     */
+    public Cuenta(String nombre, String tipo, double saldoInicial) {
+        this.IdCuenta = java.util.UUID.randomUUID().toString();
+        this.nombreBanco = nombre;
+        this.numeroCuenta = java.util.UUID.randomUUID().toString().substring(0, 8);
+        this.saldo = saldoInicial;
+        this.activa = true;
+
+        // Convertir el tipo de String a TipoCuenta
+        if (tipo.equalsIgnoreCase("Cuenta Corriente")) {
+            this.tipoCuenta = TipoCuenta.CORRIENTE;
+        } else if (tipo.equalsIgnoreCase("Cuenta de Ahorros")) {
+            this.tipoCuenta = TipoCuenta.AHORRO;
+        } else if (tipo.equalsIgnoreCase("Tarjeta de Crédito")) {
+            this.tipoCuenta = TipoCuenta.CREDITO;
+        } else {
+            this.tipoCuenta = TipoCuenta.OTRO;
+        }
+    }
+
     public String getIdCuenta() {
         return IdCuenta;
     }
@@ -64,12 +89,40 @@ public class Cuenta implements ICuenta {
         this.nombreBanco = nombreBanco;
     }
 
+    /**
+     * Obtiene el nombre de la cuenta para mostrar en la interfaz de usuario
+     * @return Nombre de la cuenta
+     */
+    public String getNombre() {
+        return nombreBanco;
+    }
+
     public TipoCuenta getTipoCuenta() {
         return tipoCuenta;
     }
 
     public void setTipoCuenta(TipoCuenta tipoCuenta) {
         this.tipoCuenta = tipoCuenta;
+    }
+
+    /**
+     * Obtiene el tipo de cuenta como String para mostrar en la interfaz de usuario
+     * @return Tipo de cuenta como String
+     */
+    public String getTipo() {
+        switch (tipoCuenta) {
+            case AHORRO:
+                return "Cuenta de Ahorros";
+            case CORRIENTE:
+                return "Cuenta Corriente";
+            case CREDITO:
+                return "Tarjeta de Crédito";
+            case EFECTIVO:
+                return "Efectivo";
+            case OTRO:
+            default:
+                return "Otro";
+        }
     }
 
     public String getNumeroCuenta() {

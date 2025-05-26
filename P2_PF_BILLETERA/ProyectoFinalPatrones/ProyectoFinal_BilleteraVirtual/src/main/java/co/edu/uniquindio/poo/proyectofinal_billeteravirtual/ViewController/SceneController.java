@@ -37,6 +37,7 @@ public class SceneController {
     public static final String VISTA_CUENTAS = "/co/edu/uniquindio/poo/proyectofinal_billeteravirtual/Cuentas.fxml";
     public static final String VISTA_CATEGORIAS = "/co/edu/uniquindio/poo/proyectofinal_billeteravirtual/Categorias.fxml";
     public static final String VISTA_REPORTES = "/co/edu/uniquindio/poo/proyectofinal_billeteravirtual/Reportes.fxml";
+    public static final String VISTA_ESTADISTICAS = "/co/edu/uniquindio/poo/proyectofinal_billeteravirtual/Estadisticas.fxml";
 
     // Constantes para las claves de datos
     public static final String USUARIO_ACTUAL = "usuarioActual";
@@ -68,9 +69,13 @@ public class SceneController {
      */
     public void cambiarEscena(String fxmlPath) throws IOException {
         try {
+            // Crear un nuevo FXMLLoader con configuración para manejar caracteres especiales
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+
+            // Cargar la vista
             Parent root = loader.load();
 
+            // Crear y establecer la escena
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -85,7 +90,26 @@ public class SceneController {
         } catch (Exception e) {
             System.err.println("Error al cambiar escena a " + fxmlPath + ": " + e.getMessage());
             e.printStackTrace();
-            throw e;
+
+            // Mostrar un diálogo de error al usuario
+            mostrarError("Error", "No se pudo cargar la vista: " + e.getMessage());
+
+            // No propagar la excepción para evitar que la aplicación se cierre
+            // En su lugar, intentar cargar una vista de respaldo
+            try {
+                // Intentar cargar la vista de inicio de sesión como respaldo
+                if (!fxmlPath.equals(VISTA_SESION)) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource(VISTA_SESION));
+                    Parent root = loader.load();
+                    Scene scene = new Scene(root);
+                    primaryStage.setScene(scene);
+                    primaryStage.show();
+                }
+            } catch (Exception ex) {
+                // Si también falla el respaldo, ahora sí lanzar la excepción original
+                System.err.println("Error al cargar vista de respaldo: " + ex.getMessage());
+                throw e;
+            }
         }
     }
 

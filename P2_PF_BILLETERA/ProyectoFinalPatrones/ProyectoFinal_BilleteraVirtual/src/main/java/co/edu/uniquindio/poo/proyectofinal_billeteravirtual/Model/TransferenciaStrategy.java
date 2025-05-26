@@ -1,7 +1,7 @@
 package co.edu.uniquindio.poo.proyectofinal_billeteravirtual.Model;
 
 /**
- * Implementación concreta de la estrategia para realizar transferencias
+ * Implementación concreta de la estrategia (Patron Strategy) para realizar transferencias
  */
 public class TransferenciaStrategy implements OperacionStrategy {
 

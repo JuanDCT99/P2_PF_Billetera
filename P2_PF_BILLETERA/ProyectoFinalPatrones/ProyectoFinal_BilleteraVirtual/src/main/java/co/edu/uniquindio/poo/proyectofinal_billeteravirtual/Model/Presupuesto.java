@@ -15,6 +15,7 @@ public class Presupuesto implements Serializable {
     private double montoTotal;
     private double montoGastado;
     private String categoriaEspecifica;
+    private Categoria categoria;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private boolean activo;
@@ -28,6 +29,7 @@ public class Presupuesto implements Serializable {
         this.montoTotal = 0.0;
         this.montoGastado = 0.0;
         this.categoriaEspecifica = "";
+        this.categoria = null;
         this.fechaInicio = LocalDate.now();
         this.fechaFin = LocalDate.now().plusMonths(1);
         this.activo = true;
@@ -65,8 +67,34 @@ public class Presupuesto implements Serializable {
         this.montoTotal = montoTotal;
         this.montoGastado = montoGastado;
         this.categoriaEspecifica = categoriaEspecifica;
+        this.categoria = null;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
+        this.activo = true;
+    }
+
+    /**
+     * Constructor para la interfaz de usuario
+     * @param nombre Nombre del presupuesto
+     * @param categoria Categoría del presupuesto
+     * @param montoTotal Monto total asignado
+     */
+    public Presupuesto(String nombre, Categoria categoria, double montoTotal) {
+        this.idPresupuesto = java.util.UUID.randomUUID().toString();
+        this.nombre = nombre;
+        this.montoTotal = montoTotal;
+        this.montoGastado = 0.0;
+        this.categoria = categoria;
+        if (categoria != null) {
+            this.categoriaEspecifica = categoria.getNombre();
+        } else {
+            this.categoriaEspecifica = "";
+        }
+        this.fechaInicio = LocalDate.now();
+
+        // Por defecto, el presupuesto es para el mes actual
+        YearMonth mesActual = YearMonth.now();
+        this.fechaFin = mesActual.atEndOfMonth();
         this.activo = true;
     }
 
@@ -112,6 +140,17 @@ public class Presupuesto implements Serializable {
 
     public void setCategoriaEspecifica(String categoriaEspecifica) {
         this.categoriaEspecifica = categoriaEspecifica;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+        if (categoria != null) {
+            this.categoriaEspecifica = categoria.getNombre();
+        }
     }
 
     public LocalDate getFechaInicio() {
@@ -187,9 +226,18 @@ public class Presupuesto implements Serializable {
                 ", montoTotal=" + montoTotal +
                 ", montoGastado=" + montoGastado +
                 ", categoriaEspecifica='" + categoriaEspecifica + '\'' +
+                ", categoria=" + (categoria != null ? categoria.getNombre() : "null") +
                 ", fechaInicio=" + fechaInicio +
                 ", fechaFin=" + fechaFin +
                 ", activo=" + activo +
                 '}';
+    }
+
+    /**
+     * Obtiene el ID del presupuesto
+     * @return ID del presupuesto
+     */
+    public String getId() {
+        return idPresupuesto;
     }
 }
